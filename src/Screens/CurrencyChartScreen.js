@@ -118,6 +118,7 @@ const CurrencyChartScreen = () => {
             color: () => colors.mainColor,
             decimalPlaces:6,
             labelColor: () => colors.textColor,
+            strokeWidth:1
           }}
           bezier
           withDots={false}
