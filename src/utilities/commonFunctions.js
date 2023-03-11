@@ -17,16 +17,21 @@ export const normalizeFontSize = (size) => {
 }
 
 export const convertObjectToArray = (object, start_date, end_date) => {
-  var time_difference = new Date(end_date).getTime() - new Date(start_date).getTime()
-
+  var time_difference = new Date(end_date).getTime() - new Date(start_date).getTime()  
   //calculate days difference by dividing total milliseconds in a day  
   var days_difference = time_difference / (1000 * 60 * 60 * 24)
+
+  const today = new Date().toISOString().slice(0, 10)
+
   let keyArray = Object.keys(object)
+  const indexOfToday = keyArray.indexOf(today)
   let valueArray = []
   Object.values(object).forEach(item => {
     valueArray.push(item[Object.keys(item)[0]])
   })
 
+  const latestRate = valueArray[indexOfToday]
+ 
   let keyArrayFormatted = []
 
   switch (days_difference) {
@@ -65,7 +70,7 @@ export const convertObjectToArray = (object, start_date, end_date) => {
 
 
 
-  return { keyArrayFormatted, valueArray }
+  return { keyArrayFormatted, valueArray,latestRate }
 
 }
 

@@ -1,8 +1,8 @@
 import { View, Text, FlatList, TouchableOpacity, Image, Dimensions, SafeAreaView } from 'react-native'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { LineChart } from 'react-native-line-chart'
+import { LineChart } from 'react-native-chart-kit'
 import Spinner from 'react-native-loading-spinner-overlay'
-import { getAllCurrencyList, getTimeSeriesData } from '../api/currency'
+import { getAllCurrencyList, getTimeSeriesData,getLatestRate } from '../api/currency'
 import Row from '../components/layout/Row'
 import SelectionCurrencyModal from '../components/SelectionCurrencyModal'
 import { calculateStartDate, normalizeFontSize, perfectWidth, perfectHeight } from '../utilities/commonFunctions'
@@ -16,13 +16,12 @@ const CurrencyChartScreen = () => {
   const [showCurrencyModal, setShowCurrencyModal] = useState(false)
   const [symbol, setSymbol] = useState('EGP')
   const [base, setBase] = useState('USD')
+  const [latestRate,setLatestRate] = useState()
   const [currentChange, setCurrentChange] = useState();
   const [selectedDate, setSelectedDate] = useState('1D')
   const [timeSeriesDataList, setTimeSeriesDataList] = useState([])
 
   const [showChart, setShowChart] = useState(false)
-
-
 
   const dateOptions = [
     "1D", "1M", "3M", "6M", "9M", "1Y"
@@ -39,6 +38,8 @@ const CurrencyChartScreen = () => {
     setBase(symbolValue)
     setSymbol(baseValue)
   }
+
+
   const getTimeSeriesDataList = async () => {
     setShowChart(false)
     const endDate = new Date().toISOString()
@@ -47,6 +48,7 @@ const CurrencyChartScreen = () => {
     const list = await getTimeSeriesData(startDate, formattedEndDate, symbol, base)
     setTimeSeriesDataList(list)
     setShowChart(true)
+    setLatestRate((list.latestRate*1).toFixed(2))
   }
 
   useLayoutEffect(() => {
@@ -76,7 +78,7 @@ const CurrencyChartScreen = () => {
 
 
   return (
-    <View style={{ backgroundColor:'#FFFFFF',paddingTop: perfectHeight(80), flex: 1 }}>
+    <View style={{ backgroundColor:'#FFFFFF',paddingTop: perfectHeight(30), flex: 1 }}>
       <Spinner visible={!showChart} />
       <SelectionCurrencyModal onSelect={(value) => changeCurrency(value)} data={currencyList} isVisible={showCurrencyModal} toggleModal={() => { setShowCurrencyModal(false) }} />
       <Row margin={30} borderRadius={20} borderColor={colors.disabledButtonColor} borderWidth={1} paddingHorizontal={40} paddingVertical={12} justifyContent={'space-between'}>
@@ -96,34 +98,40 @@ const CurrencyChartScreen = () => {
           </Row>
         </TouchableOpacity>
       </Row>
+      <Row  marginHorizontal={30} borderRadius={20} backgroundColor={colors.mainColorOpacity}  paddingHorizontal={40} paddingVertical={24} marginBottom={20}>
+        <Text style={{flex:1,textAlign:'center',color:'black',fontWeight:'bold',fontSize:normalizeFontSize(24)}}>1 {base} = {latestRate} {symbol} </Text>
+      </Row>
       <View style={{ alignItems: 'center' }}>
         {showChart && <LineChart
           data={{
             labels: timeSeriesDataList.keyArrayFormatted,
             datasets: [{
               data: timeSeriesDataList.valueArray
-            }]
+            }],
           }}
           width={perfectWidth(width - 16)}
-          height={perfectHeight(300)}
+          height={perfectHeight(400)}
           chartConfig={{
             backgroundColor: '#FFFFFF',
             backgroundGradientFrom: '#FFFFFF',
             backgroundGradientTo: "#FFF",
             color: () => colors.mainColor,
+            decimalPlaces:6,
+            labelColor: () => colors.textColor,
           }}
           bezier
+          withDots={false}
+          withInnerLines	={false}
           style={{
-            marginVertical: perfectHeight(16),
+            marginTop: perfectHeight(16),
             borderRadius: 16,
           }}
+          segments={6}
         />}
       </View>
-      <View style={{ alignItems: 'center' ,paddingHorizontal:8}}>
+      <View style={{ alignItems: 'center' ,paddingHorizontal:8,marginTop:16}}>
         <FlatList horizontal data={dateOptions} keyExtractor={item => item} renderItem={_renderItem} />
       </View>
-
-
     </View>
   )
 }
