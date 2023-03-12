@@ -9,28 +9,31 @@ import Row from './layout/Row'
 export default function SelectionCountryModal({ isVisible, toggleModal, data, onSelect }) {
     const [filteredCountryList, setFilteredCountryList] = useState([])
     const [dateArray, setDateArray] = useState([])
-    const [paginationStartNumber, setPaginationStartNumber] = useState(0)
     const [paginationEndNumber, setPaginationEndNumber] = useState(10)
     const [search, setSearch] = useState(false)
 
     useEffect(() => {
-        setFilteredCountryList(Object.values(data).slice(paginationStartNumber, paginationEndNumber))
+        setFilteredCountryList(Object.values(data).slice(0, paginationEndNumber))
         setDateArray(Object.values(data))
     }, [data])
 
+    const closeModal = () => {
+        setFilteredCountryList(data)
+        toggleModal()
+    }
     const _next = () => {
         if (!search) {
             setPaginationEndNumber(paginationEndNumber + 10)
-            setFilteredCountryList(Object.values(data).slice(paginationStartNumber, paginationEndNumber + 10))
+            setFilteredCountryList(Object.values(data).slice(0, paginationEndNumber))
         }
     }
 
     const _renderItem = ({ item }) => {
         return (
-            <TouchableOpacity style={{ paddingHorizontal: 16, paddingVertical: 12 }} onPress={() => { onSelect(item), toggleModal() }} >
+            <TouchableOpacity style={{ paddingHorizontal: 16, paddingVertical: 12 }} onPress={() => { onSelect(item), closeModal() }} >
                 <Row justifyContent='flex-start'>
                     <View style={{ borderColor: colors.mainColor, borderWidth: 2, width: perfectWidth(20), height: perfectHeight(20), borderRadius: 20 }} />
-                    <Text style={{textAlignVertical:'center', marginLeft:16,paddingTop: 6, fontSize: normalizeFontSize(18),fontWeight:'600', textAlign: 'center', color: 'black' }}>{item}</Text>
+                    <Text style={{ textAlignVertical: 'center', marginLeft: 16, paddingTop: 6, fontSize: normalizeFontSize(18), fontWeight: '600', textAlign: 'center', color: 'black' }}>{item}</Text>
                 </Row>
             </TouchableOpacity>
         )
@@ -46,18 +49,18 @@ export default function SelectionCountryModal({ isVisible, toggleModal, data, on
         <Modal
             style={styles.modal}
             visible={isVisible}
-            onRequestClose={toggleModal}
+            onRequestClose={closeModal}
             transparent={true}
             animationType={'fade'}
         >
-            <TouchableOpacity activeOpacity={1} onPress={() => { toggleModal() }} style={{ backgroundColor: 'rgba( 0, 0, 0, 0.2 )', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
+            <TouchableOpacity activeOpacity={1} onPress={() => { closeModal() }} style={{ backgroundColor: 'rgba( 0, 0, 0, 0.2 )', flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
                 <TouchableWithoutFeedback >
                     <View style={{ backgroundColor: 'white', width: '100%', height: '70%', borderTopLeftRadius: 30, borderTopRightRadius: 30, alignItems: 'center', paddingTop: perfectHeight(8) }}>
                         <View style={{ width: perfectWidth(35), borderColor: '#E0E0E0', borderWidth: 1 }} />
                         <View style={{ width: '100%', marginBottom: 6, alignItems: 'center' }}>
                             <TextInput
-                            underlineColorAndroid={'transparent'}
-                                style={{ width: '100%', textAlign: 'center', textAlignVertical: 'center', color: colors.textSearchColor, fontSize: normalizeFontSize(20), fontWeight: '600' }}
+                                underlineColorAndroid={'transparent'}
+                                style={{width:"50%",textAlign: 'center', textAlignVertical: 'center', color: colors.textSearchColor, fontSize: normalizeFontSize(20), fontWeight: '600' }}
                                 onChangeText={(value) => {
                                     if (value.length > 0) { setSearch(true) }
                                     else setSearch(false)

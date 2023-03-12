@@ -7,17 +7,19 @@ import Button from '../components/layout/Button';
 import country from '../api/country';
 import { normalizeFontSize, perfectHeight, perfectWidth } from '../utilities/commonFunctions';
 import Spinner from 'react-native-loading-spinner-overlay';
+import constant from '../utilities/constant';
 
 const GetLocationScreen = ({ navigation }) => {
   const [showCountryModal, setShowCountryModal] = useState(false)
   const [location, setLocation] = useState('Search country')
-  // const {location:deviceLocation,loading} = useLocation()
-  // useEffect(()=>{
-  //   setLocation(deviceLocation)
-  // },[deviceLocation])
+  const {location:deviceLocation,loading} = useLocation()
+  useEffect(()=>{
+    setLocation(deviceLocation)
+  },[deviceLocation])
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF', paddingHorizontal: perfectWidth(24) }}>
-      {/* <Spinner visible={loading}/> */}
+      <Spinner visible={loading}/>
       <SelectionCountryModal onSelect={(value) => setLocation(value)} data={country} isVisible={showCountryModal} toggleModal={() => setShowCountryModal(!setShowCountryModal)} />
       <View style={{flex:0.95}}>
         <Text style={{ marginTop: perfectHeight(80), color: "#212121", fontWeight: 'bold', fontSize: normalizeFontSize(24) }} >Your Location</Text>
@@ -28,7 +30,7 @@ const GetLocationScreen = ({ navigation }) => {
           </Row>
         </TouchableOpacity>
       </View>
-      <Button disabled={location === 'Search country' ? true : false} onPress={()=>navigation.navigate('CurrencyChartScreen')}>
+      <Button disabled={location === 'Search country' ? true : false} onPress={()=>navigation.navigate(constant.CurrencyChartScreen)}>
         <Text style={{ fontWeight: "700", color: '#FFFFFF', fontSize: normalizeFontSize(16) }}>Continue</Text>
       </Button>
     </SafeAreaView>

@@ -1,8 +1,8 @@
 import { View, Text, FlatList, TouchableOpacity, Image, Dimensions, SafeAreaView } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { LineChart } from 'react-native-chart-kit'
 import Spinner from 'react-native-loading-spinner-overlay'
-import { getAllCurrencyList, getTimeSeriesData,getLatestRate } from '../api/currency'
+import { getAllCurrencyList, getTimeSeriesData } from '../api/currency'
 import Row from '../components/layout/Row'
 import SelectionCurrencyModal from '../components/SelectionCurrencyModal'
 import { calculateStartDate, normalizeFontSize, perfectWidth, perfectHeight } from '../utilities/commonFunctions'
@@ -10,13 +10,13 @@ import colors from '../utilities/colors'
 import usePermission from '../hooks/usePermission'
 
 const CurrencyChartScreen = () => {
-  // usePermission()
+  usePermission()
   const width = Dimensions.get('window').width
   const [currencyList, setCurrencyList] = useState([])
   const [showCurrencyModal, setShowCurrencyModal] = useState(false)
   const [symbol, setSymbol] = useState('EGP')
   const [base, setBase] = useState('USD')
-  const [latestRate,setLatestRate] = useState()
+  const [latestRate, setLatestRate] = useState()
   const [currentChange, setCurrentChange] = useState();
   const [selectedDate, setSelectedDate] = useState('1D')
   const [timeSeriesDataList, setTimeSeriesDataList] = useState([])
@@ -42,13 +42,10 @@ const CurrencyChartScreen = () => {
 
   const getTimeSeriesDataList = async () => {
     setShowChart(false)
-    const endDate = new Date().toISOString()
-    const formattedEndDate = endDate.slice(0, 10)
-    const startDate = calculateStartDate(selectedDate)
-    const list = await getTimeSeriesData(startDate, formattedEndDate, symbol, base)
+    const list = await getTimeSeriesData(selectedDate ,symbol, base)
     setTimeSeriesDataList(list)
     setShowChart(true)
-    setLatestRate((list.latestRate*1).toFixed(2))
+    setLatestRate((list.latestRate * 1).toFixed(2))
   }
 
   useLayoutEffect(() => {
@@ -70,22 +67,20 @@ const CurrencyChartScreen = () => {
   const _renderItem = ({ item }) => {
     return (
       <TouchableOpacity onPress={() => { setSelectedDate(item) }} style={{ backgroundColor: selectedDate == item ? colors.mainColor : "white", paddingHorizontal: 15, borderColor: selectedDate == item ? colors.mainColor : "#77838F", borderWidth: 1, paddingVertical: 10, marginHorizontal: 6, justifyContent: 'center', borderRadius: 15 }}>
-        <Text style={{ fontSize: normalizeFontSize(16),fontWeight:'600', color: selectedDate == item ? 'white' : colors.textColor }}>{item}</Text>
+        <Text style={{ fontSize: normalizeFontSize(16), fontWeight: '600', color: selectedDate == item ? 'white' : colors.textColor }}>{item}</Text>
       </TouchableOpacity>
     )
   }
 
-
-
   return (
-    <View style={{ backgroundColor:'#FFFFFF',paddingTop: perfectHeight(30), flex: 1 }}>
+    <View style={{ backgroundColor: '#FFFFFF', paddingTop: perfectHeight(30), flex: 1 }}>
       <Spinner visible={!showChart} />
       <SelectionCurrencyModal onSelect={(value) => changeCurrency(value)} data={currencyList} isVisible={showCurrencyModal} toggleModal={() => { setShowCurrencyModal(false) }} />
       <Row margin={30} borderRadius={20} borderColor={colors.disabledButtonColor} borderWidth={1} paddingHorizontal={40} paddingVertical={12} justifyContent={'space-between'}>
         <TouchableOpacity onPress={() => { setShowCurrencyModal(true), setCurrentChange('base') }} style={{ backgroundColor: colors.mainColorOpacity, padding: 12, borderRadius: 15 }}>
           <Row paddingHorizontal={8}>
-            <Text style={{fontWeight:'500',fontSize:normalizeFontSize(14)}}>{base}</Text>
-            <Image style={{marginLeft:8,height:14,width:14}} source={require('../assets/down.png')} />
+            <Text style={{ fontWeight: '500', fontSize: normalizeFontSize(14) }}>{base}</Text>
+            <Image style={{ marginLeft: 8, height: 14, width: 14 }} source={require('../assets/down.png')} />
           </Row>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => flipCurrency()}>
@@ -93,13 +88,13 @@ const CurrencyChartScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => { setShowCurrencyModal(true), setCurrentChange('symbol') }} style={{ backgroundColor: colors.mainColorOpacity, padding: 12, borderRadius: 15 }}>
           <Row paddingHorizontal={8}>
-            <Text style={{fontWeight:'500',fontSize:normalizeFontSize(14)}}>{symbol}</Text>
-            <Image style={{marginLeft:8,height:14,width:14}} source={require('../assets/down.png')} />
+            <Text style={{ fontWeight: '500', fontSize: normalizeFontSize(14) }}>{symbol}</Text>
+            <Image style={{ marginLeft: 8, height: 14, width: 14 }} source={require('../assets/down.png')} />
           </Row>
         </TouchableOpacity>
       </Row>
-      <Row  marginHorizontal={30} borderRadius={20} backgroundColor={colors.mainColorOpacity}  paddingHorizontal={40} paddingVertical={24} marginBottom={20}>
-        <Text style={{flex:1,textAlign:'center',color:'black',fontWeight:'bold',fontSize:normalizeFontSize(24)}}>1 {base} = {latestRate} {symbol} </Text>
+      <Row marginHorizontal={30} borderRadius={20} backgroundColor={colors.mainColorOpacity} paddingHorizontal={40} paddingVertical={24} marginBottom={20}>
+        <Text style={{ flex: 1, textAlign: 'center', color: 'black', fontWeight: 'bold', fontSize: normalizeFontSize(24) }}>1 {base} = {latestRate} {symbol} </Text>
       </Row>
       <View style={{ alignItems: 'center' }}>
         {showChart && <LineChart
@@ -116,9 +111,9 @@ const CurrencyChartScreen = () => {
             backgroundGradientFrom: '#FFFFFF',
             backgroundGradientTo: "#FFF",
             color: () => colors.mainColor,
-            decimalPlaces:6,
+            decimalPlaces: 4,
             labelColor: () => colors.textColor,
-            strokeWidth:1
+            strokeWidth: 1
           }}
           bezier
           withDots={false}

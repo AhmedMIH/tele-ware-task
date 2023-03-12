@@ -1,6 +1,5 @@
 import Geolocation from "@react-native-community/geolocation";
 import { useEffect, useState } from "react";
-import { Google_API_KEY } from '@env'
 import Geocoder from "react-native-geocoding";
 
 function useLocation() {

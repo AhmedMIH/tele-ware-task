@@ -1,4 +1,5 @@
 import { Dimensions, PixelRatio } from 'react-native'
+import constant from './constant';
 
 export const screenWidth = Dimensions.get('window').width
 export const screenHeight = Dimensions.get('window').height
@@ -16,82 +17,48 @@ export const normalizeFontSize = (size) => {
   return PixelRatio.roundToNearestPixel((size - 1) * (screenHeight / heightMobileStandard))
 }
 
-export const convertObjectToArray = (object, start_date, end_date) => {
-  var time_difference = new Date(end_date).getTime() - new Date(start_date).getTime()  
-  //calculate days difference by dividing total milliseconds in a day  
-  var days_difference = time_difference / (1000 * 60 * 60 * 24)
-
-  const today = new Date().toISOString().slice(0, 10)
-
+export const convertObjectToArray = (object, selectedDate) => {
   let keyArray = Object.keys(object)
-  const indexOfToday = keyArray.indexOf(today)
   let valueArray = []
+
   Object.values(object).forEach(item => {
     valueArray.push(item[Object.keys(item)[0]])
   })
 
-  const latestRate = valueArray[indexOfToday]
- 
+  const latestRate = valueArray[valueArray.length-1]
+
   let keyArrayFormatted = []
 
-  switch (days_difference) {
-    case 1:
-      keyArrayFormatted = keyArray
-      break;
-    case 28:
-      keyArray.filter((item, index) => {
-        if (index % 4 == 0) keyArrayFormatted.push(item.slice(5))
-      })
-      break;
-    case 90:
-      keyArray.filter((item, index) => {
-        if (index % 15 == 0) keyArrayFormatted.push(item.slice(5))
-      })
-      break
-
-    case 181:
-      keyArray.filter((item, index) => {
-        if (index % 30 == 0) keyArrayFormatted.push(item.slice(5))
-      })
-      break
-
-    case 273:
-      keyArray.filter((item, index) => {
-        if (index % 45 == 0) keyArrayFormatted.push(item.slice(5))
-      })
-      break
-
-    case 365:
-      keyArray.filter((item, index) => {
-        if (index % 60 == 0) keyArrayFormatted.push(item.slice(5))
-      })
-      break
+  if(selectedDate == constant.day){
+    keyArrayFormatted = keyArray
+  }else{
+    keyArray.filter((item, index) => {
+      if (index % Math.round(keyArray.length/7) == 0) keyArrayFormatted.push(item.slice(5))
+    })
   }
-
-
-
-  return { keyArrayFormatted, valueArray,latestRate }
-
+  
+  return { keyArrayFormatted, valueArray, latestRate }
 }
 
-export const   calculateStartDate = (selectedDate) => {
+
+export const calculateStartDate = (selectedDate) => {
   switch (selectedDate) {
-    case '1D':
+    case constant.day:
       let yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
       return yesterday.toISOString().slice(0, 10)
-    case '1M':
+    case constant.month:
       let monthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1));
       return monthAgo.toISOString().slice(0, 10)
-    case '3M':
+    case constant.threeMonth:
       let threeMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 3));
       return threeMonthAgo.toISOString().slice(0, 10)
-    case '6M':
+    case constant.sixMonth:
       let sixMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 6));
       return sixMonthAgo.toISOString().slice(0, 10)
-    case '9M':
+    case constant.nineMonth:
       let nineMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 9));
       return nineMonthAgo.toISOString().slice(0, 10)
-    case '1Y':
+    case constant.year:
       let YearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
       return YearAgo.toISOString().slice(0, 10)
   }
