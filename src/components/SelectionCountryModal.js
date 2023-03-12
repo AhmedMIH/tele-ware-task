@@ -18,13 +18,13 @@ export default function SelectionCountryModal({ isVisible, toggleModal, data, on
     }, [data])
 
     const closeModal = () => {
-        setFilteredCountryList(data)
+        setFilteredCountryList(Object.values(data).slice(0, paginationEndNumber))
         toggleModal()
     }
     const _next = () => {
         if (!search) {
+            setFilteredCountryList(Object.values(data).slice(0, paginationEndNumber +10))
             setPaginationEndNumber(paginationEndNumber + 10)
-            setFilteredCountryList(Object.values(data).slice(0, paginationEndNumber))
         }
     }
 

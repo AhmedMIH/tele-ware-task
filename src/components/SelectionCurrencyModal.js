@@ -11,11 +11,11 @@ export default function SelectionCurrencyModal({ isVisible, toggleModal, data, o
     const [search, setSearch] = useState(false)
 
     useEffect(() => {
-        setFilteredCurrencyList(data)
+        setFilteredCurrencyList(Object.values(data).slice(0, paginationEndNumber))
     }, [data])
 
     const closeModal = () => {
-        setFilteredCurrencyList(data)
+        setFilteredCurrencyList(Object.values(data).slice(0, paginationEndNumber))
         toggleModal()
     }
     const _renderItem = ({ item }) => {
@@ -31,8 +31,8 @@ export default function SelectionCurrencyModal({ isVisible, toggleModal, data, o
 
     const _next = () => {
         if (!search) {
+            setFilteredCurrencyList(Object.values(data).slice(0, paginationEndNumber +10 ))
             setPaginationEndNumber(paginationEndNumber + 10)
-            setFilteredCurrencyList(Object.values(data).slice(0, paginationEndNumber ))
         }
     }
 
