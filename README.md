@@ -2,4 +2,4 @@
 
 # notes :
 
-location api key is store in env file so pleas put your own key to work probebly
+location api key is store in env file so please put your own key to work fine
