@@ -4,7 +4,7 @@ import Geocoder from "react-native-geocoding";
 
 function useLocation() {
 
-    const [location, setLocation] = useState()
+    const [location, setLocation] = useState("Search country")
     const [loading, setLoading] = useState(true)
     let latitude, longitude
     useEffect(() => {
@@ -26,7 +26,6 @@ function useLocation() {
             },
             error => {
                 setLoading(false)
-                , Alert.alert(error.message)
             },
             { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
         );
